@@ -15,11 +15,12 @@ import play.templates.GroovyTemplate.ExecutableTemplate;
 public class FbGraphTags extends FastTags {
 
     public static void _script(Map<?, ?> args, Closure body, PrintWriter out, ExecutableTemplate template, int fromLine) {
+    	String domain = args.get("domain").toString();
         out.println("<div id='fb-root'></div>");
         out.println("<script src='//connect.facebook.net/" + getLocale(args.get("locale")) + "/all.js'></script>");
         out.println("<script>");
         out.println("    FB.init({");
-        out.println("        appId  : '" + FbGraph.getAppId() + "',");
+        out.println("        appId  : '" + FbGraph.getAppId(domain) + "',");
         out.println("        status : true,");
         out.println("        cookie : true,");
         out.println("        xfbml  : true");
@@ -28,11 +29,12 @@ public class FbGraphTags extends FastTags {
     }
 
     public static void _scriptAsync(Map<?, ?> args, Closure body, PrintWriter out, ExecutableTemplate template, int fromLine) {
+    	String domain = args.get("domain").toString();
         out.println("<div id='fb-root'></div>");
         out.println("<script>");
         out.println("    window.fbAsyncInit = function() {");
         out.println("        FB.init({");
-        out.println("            appId  : '" + FbGraph.getAppId() + "',");
+        out.println("            appId  : '" + FbGraph.getAppId(domain) + "',");
         out.println("            status : true,");
         out.println("            cookie : true,");
         out.println("            xfbml  : true");
