@@ -18,7 +18,7 @@ import play.Play;
 
 /**
  * FbGraph provides simple access to the Facebook Graph API.
- * 
+ *
  * @author Eric Jacob
  */
 public class FbGraph {
@@ -35,7 +35,7 @@ public class FbGraph {
 
 	/**
 	 * Returns the Id associated to this application.
-	 * 
+	 *
 	 * @return the application Id
 	 */
 	public static String getAppId(String domain) {
@@ -51,7 +51,7 @@ public class FbGraph {
 
 	/**
 	 * Returns the Secret associated to this application.
-	 * 
+	 *
 	 * @return the application Secret
 	 */
 	public static String getAppSecret(String domain) {
@@ -80,7 +80,7 @@ public class FbGraph {
 	 * Constructs and returns the name of the cookie that potentially houses the
 	 * signed request for the app user. The cookie is not set by the FbGraph
 	 * class, but it may be set by the JavaScript SDK.
-	 * 
+	 *
 	 * @return the name of the cookie that would house the signed request
 	 */
 	protected static String getSignedRequestCookieName(String domain) {
@@ -90,7 +90,7 @@ public class FbGraph {
 	/**
 	 * Retrieve the signed request, either from a request parameter or, if not
 	 * present, from a cookie.
-	 * 
+	 *
 	 * @return the signed request if available or null otherwise
 	 */
 	public static SignedRequest getSignedRequest(String domain) {
@@ -110,7 +110,7 @@ public class FbGraph {
 
 	/**
 	 * Returns the data stored in the signed request.
-	 * 
+	 *
 	 * @return the data stored in the signed request or null otherwise
 	 */
 	public static JsonObject getFacebookData(String domain) {
@@ -124,37 +124,38 @@ public class FbGraph {
 		}
 	}
 
-	/**
-	 * Returns the user access token associated with this application.
-	 * 
-	 * @return the user access token or null otherwise
-	 */
-	public static String getAccessToken(String domain) {
-		String accessToken = null;
-		Request req = Request.current();
-		if (req.args.containsKey(FB_GRAPH_TOKEN)) {
-			accessToken = (String) Request.current().args.get(FB_GRAPH_TOKEN);
-		}
-		else {
-			JsonObject fbData = getFacebookData(domain);
-			if (fbData != null && fbData.has("oauth_token")) {
-				accessToken = fbData.get("oauth_token").getAsString();
-			}
-			else if (fbData != null && fbData.has("code")) {
-				HttpResponse res = WS
-						.url(FB_GRAPH_URL + "oauth/access_token?" + "client_id=" + getAppId(domain) + "&client_secret="
-								+ getAppSecret(domain) + "&redirect_uri=" + "&code=" + fbData.get("code").getAsString())
-						.get();
-				Map<String, String> parts = parseStr(res.getString());
-				if (parts.containsKey("access_token")) {
-					accessToken = parts.get("access_token");
-					req.args.put(FB_GRAPH_TOKEN, accessToken);
-				}
-			}
-		}
-		Logger.debug("Access token: %s", accessToken);
-		return accessToken;
-	}
+    /**
+     * Returns the user access token associated with this application.
+     *
+     * @return  the user access token
+               or null otherwise
+     */
+    public static String getAccessToken(String domain) {
+        String accessToken = null;
+        Request req = Request.current();
+        if (req.args.containsKey(FB_GRAPH_TOKEN)) {
+            accessToken = (String) Request.current().args.get(FB_GRAPH_TOKEN);
+        } else {
+            JsonObject fbData = getFacebookData(domain);
+ 	    if(fbData!=null && fbData.has("oauth_token")){
+            	accessToken=fbData.get("oauth_token").getAsString();
+            }
+            else if (fbData != null && fbData.has("code")) {
+                HttpResponse res = WS.url(FB_GRAPH_URL + "oauth/access_token?"
+                        + "client_id=" + getAppId(domain)
+                        + "&client_secret="
+                        + getAppSecret(domain) +"&redirect_uri="
+                        + "&code=" + fbData.get("code").getAsString()).get();
+
+                if (res.getJson() != null && res.getJson().getAsJsonObject().get("access_token")!= null) {
+                    accessToken = res.getJson().getAsJsonObject().get("access_token").getAsString();
+                    req.args.put(FB_GRAPH_TOKEN, accessToken);
+                }
+            }
+        }
+        Logger.debug("Access token: %s", accessToken);
+        return accessToken;
+    }
 
 	/**
 	 * Destroy the current session.
@@ -172,7 +173,7 @@ public class FbGraph {
 
 	/**
 	 * Executes a GET or POST request to the Graph API.
-	 * 
+	 *
 	 * @param path
 	 *            - the URL path
 	 * @param method
@@ -211,7 +212,7 @@ public class FbGraph {
 
 	/**
 	 * Performs an authorized request to the Graph API.
-	 * 
+	 *
 	 * @param path
 	 *            - the URL path
 	 * @param method
@@ -241,7 +242,7 @@ public class FbGraph {
 
 	/**
 	 * Executes an API call to the Graph API.
-	 * 
+	 *
 	 * @param path
 	 *            - the URL path, e.g. "me/friends"
 	 * @param method
@@ -272,7 +273,7 @@ public class FbGraph {
 
 	/**
 	 * Executes an API call to the Graph API.
-	 * 
+	 *
 	 * @param path
 	 *            - the URL path, e.g. "me/friends"
 	 * @param method
@@ -286,7 +287,7 @@ public class FbGraph {
 
 	/**
 	 * Executes an API call to the Graph API.
-	 * 
+	 *
 	 * @param path
 	 *            - the URL path, e.g. "me/friends"
 	 * @param params
@@ -300,7 +301,7 @@ public class FbGraph {
 
 	/**
 	 * Executes an API call to the Graph API.
-	 * 
+	 *
 	 * @param path
 	 *            - the URL path, e.g. "me/friends"
 	 * @return the response object
@@ -312,7 +313,7 @@ public class FbGraph {
 
 	/**
 	 * Fetches a single object to the Graph API.
-	 * 
+	 *
 	 * @param objId
 	 *            - the ID of the object, e.g. "me"
 	 * @param params
@@ -326,7 +327,7 @@ public class FbGraph {
 
 	/**
 	 * Fetches a single Graph API object.
-	 * 
+	 *
 	 * @param objId
 	 *            - the ID of the object, e.g. "me"
 	 * @return the response object
@@ -338,7 +339,7 @@ public class FbGraph {
 
 	/**
 	 * Fetches a single object to the Graph API.
-	 * 
+	 *
 	 * @param objId
 	 *            - the ID of the object, e.g. "me"
 	 * @param clazz
@@ -355,7 +356,7 @@ public class FbGraph {
 
 	/**
 	 * Fetches a single Graph API object.
-	 * 
+	 *
 	 * @param objId
 	 *            - the ID of the object, e.g. "me"
 	 * @param clazz
@@ -369,7 +370,7 @@ public class FbGraph {
 
 	/**
 	 * Fetches multiple Graph API objects.
-	 * 
+	 *
 	 * @param ids
 	 *            - the IDs of the objects
 	 * @return the response objects
@@ -381,7 +382,7 @@ public class FbGraph {
 
 	/**
 	 * Fetches a Graph API connection.
-	 * 
+	 *
 	 * @param conId
 	 *            - the ID/CONNECTION_TYPE string, e.g. "me/friends"
 	 * @param params
@@ -396,7 +397,7 @@ public class FbGraph {
 
 	/**
 	 * Fetches a Graph API connection.
-	 * 
+	 *
 	 * @param conId
 	 *            - the ID/CONNECTION_TYPE string, e.g. "me/friends"
 	 * @return the response object
@@ -408,7 +409,7 @@ public class FbGraph {
 
 	/**
 	 * Fetches a Graph API connection.
-	 * 
+	 *
 	 * @param conId
 	 *            - the ID/CONNECTION_TYPE string, e.g. "me/friends"
 	 * @param clazz
@@ -425,7 +426,7 @@ public class FbGraph {
 
 	/**
 	 * Fetches a Graph API connection.
-	 * 
+	 *
 	 * @param conId
 	 *            - the ID/CONNECTION_TYPE string, e.g. "me/friends"
 	 * @param clazz
@@ -439,7 +440,7 @@ public class FbGraph {
 
 	/**
 	 * Returns a picture URL.
-	 * 
+	 *
 	 * @param picId
 	 *            - the ID of the picture
 	 * @return the URL of the picture
@@ -455,7 +456,7 @@ public class FbGraph {
 
 	/**
 	 * Returns a picture URL.
-	 * 
+	 *
 	 * @param picId
 	 *            - the ID of the picture
 	 * @param picType
@@ -469,7 +470,7 @@ public class FbGraph {
 
 	/**
 	 * Performs a Graph API publish operation.
-	 * 
+	 *
 	 * @param path
 	 *            - the URL path
 	 * @param params
@@ -483,7 +484,7 @@ public class FbGraph {
 
 	/**
 	 * Performs a Graph API publish operation.
-	 * 
+	 *
 	 * @param path
 	 *            - the URL path
 	 * @param params
@@ -499,7 +500,7 @@ public class FbGraph {
 
 	/**
 	 * Performs a Graph API delete operation.
-	 * 
+	 *
 	 * @param objId
 	 *            - the ID of the object
 	 * @return true if successful, false otherwise
@@ -511,7 +512,7 @@ public class FbGraph {
 
 	/**
 	 * Returns a RestFB Facebook client.
-	 * 
+	 *
 	 * @return the Facebook client
 	 */
 	public static FacebookClient getFacebookClient(String domain) {
